@@ -1,4 +1,4 @@
-# Model Card – ai-energy-saver
+# Model Card
 
 ## Overview
 Forecast household energy use and recommend tariff-aware shifts.  
