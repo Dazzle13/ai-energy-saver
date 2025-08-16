@@ -26,15 +26,8 @@ class ProphetForecaster(BaseForecaster):
         self._model: Optional["Prophet"] = None
 
     def fit(self, ts: pd.DataFrame) -> None:
-        """
-        Fit a Prophet model.
-        Parameters
-        ----------
-        ts : pd.DataFrame
-            Index must be DatetimeIndex; column must include 'kwh'.
-        """
         try:
-            from prophet import Prophet  # runtime import to keep optional
+            from prophet import Prophet
         except Exception as e:
             raise ImportError(
                 "prophet is required for ProphetForecaster. Install with `pip install prophet`."
@@ -42,12 +35,18 @@ class ProphetForecaster(BaseForecaster):
 
         if "kwh" not in ts.columns:
             raise ValueError("ProphetForecaster.fit expects a DataFrame column named 'kwh'.")
-
         if not isinstance(ts.index, pd.DatetimeIndex):
             raise ValueError("ProphetForecaster.fit expects a DatetimeIndex.")
 
-        df = ts[["kwh"]].reset_index().rename(columns={"index": "ds", "kwh": "y"})
-        df["ds"] = pd.to_datetime(df["ds"], utc=True)
+        # Reset index; first column name may be 'timestamp' etc. -> rename to 'ds'
+        df = ts[["kwh"]].reset_index()
+        first_col = df.columns[0]
+        df = df.rename(columns={first_col: "ds", "kwh": "y"})
+
+        # Parse to datetime and DROP timezone (Prophet requires tz-naive)
+        # Keep UTC clock values by converting to UTC first, then removing tz info.
+        ds = pd.to_datetime(df["ds"], utc=True)
+        df["ds"] = ds.dt.tz_convert(None)  # tz-aware -> tz-naive
 
         m = Prophet(
             daily_seasonality=self._daily,
