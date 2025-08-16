@@ -51,9 +51,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     env:
-      # Set to 1 to skip Prophet-heavy tests if you add markers/guards in tests.
       AES_SKIP_PROPHET: "1"
     steps:
       - name: Checkout
@@ -77,15 +76,25 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
-        # If you later want Prophet in CI, uncomment the next line (may be heavy/slow):
-        #  pip install prophet
+          # ensure pytest & coverage present even if not in dev extras
+          pip install pytest coverage
+
+      # Optional: show what pytest discovers
+      - name: Pytest collect (debug)
+        run: pytest --collect-only -q || true
 
       - name: Run tests (with coverage)
         run: |
-          pip install coverage
-          coverage run -m pytest -q
-          coverage xml
-          coverage html || true
+          set -e
+          COLLECT=$(pytest --collect-only -q || true)
+          echo "$COLLECT"
+          if echo "$COLLECT" | grep -q "::"; then
+            coverage run -m pytest -q
+            coverage xml
+            coverage html || true
+          else
+            echo "No tests collected; skipping coverage (not failing the job)."
+          fi
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4

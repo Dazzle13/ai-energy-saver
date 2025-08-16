@@ -44,7 +44,7 @@ class TariffWindowOptimizer(BaseOptimizer):
         slot_minutes = int((forecast_kwh.index[1] - forecast_kwh.index[0]).total_seconds() / 60)
         slots_per_hour = max(1, 60 // slot_minutes)
 
-        baseline_cost = _cost_of_series_kwh(forecast_kwh, tariff)
+        # baseline_cost = _cost_of_series_kwh(forecast_kwh, tariff)
 
         for c in cycles:
             name = c.get("name", "cycle")

@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List
-
-import pandas as pd
+from typing import Any, Dict
 
 from .adapters.csv_adapter import load_meter
 from .adapters.tariff_loader import load_tariff
