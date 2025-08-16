@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ "**" ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint (ruff + mypy)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install lint deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff mypy
+
+      - name: Ruff
+        run: ruff check .
+
+      - name: Mypy (lenient)
+        run: mypy src --ignore-missing-imports --install-types --non-interactive
+
+  test:
+    name: Tests (pytest)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+    env:
+      # Set to 1 to skip Prophet-heavy tests if you add markers/guards in tests.
+      AES_SKIP_PROPHET: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+            ${{ runner.os }}-pip-
+
+      - name: Install project (dev)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+        # If you later want Prophet in CI, uncomment the next line (may be heavy/slow):
+        #  pip install prophet
+
+      - name: Run tests (with coverage)
+        run: |
+          pip install coverage
+          coverage run -m pytest -q
+          coverage xml
+          coverage html || true
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.python-version }}
+          path: |
+            coverage.xml
+            htmlcov/
+          if-no-files-found: ignore
