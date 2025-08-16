@@ -1,8 +1,9 @@
+from typing import Union
 from pathlib import Path
 import json
 import pandas as pd
 
-def load_tariff(path: str | Path) -> pd.DataFrame:
+def load_tariff(path: Union[str, Path]) -> pd.DataFrame:
     """
     JSON list of objects:
     [
