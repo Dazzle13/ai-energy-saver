@@ -1,0 +1,3 @@
+# Contributor Covenant Code of Conduct
+
+We adopt the Contributor Covenant v2.1...

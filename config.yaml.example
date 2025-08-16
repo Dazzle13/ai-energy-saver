@@ -1,0 +1,4 @@
+timezone: Europe/London
+slot_minutes: 30
+forecast:
+  model: prophet...

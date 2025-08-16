@@ -1,0 +1,3 @@
+# Sponsor ai-energy-saver
+
+Your sponsorship helps maintain and improve the library...

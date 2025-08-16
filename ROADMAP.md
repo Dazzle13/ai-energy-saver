@@ -1,0 +1,3 @@
+# Roadmap
+
+- v0.1: CLI, default providers, CSV/JSON inputs, reports...

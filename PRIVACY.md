@@ -1,0 +1,3 @@
+# Privacy & Data Contribution
+
+Local by default. The library does not send data anywhere...
