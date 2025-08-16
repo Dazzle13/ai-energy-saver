@@ -85,7 +85,8 @@ class TariffWindowOptimizer(BaseOptimizer):
                     "name": name,
                     "start": start_ts.isoformat(),
                     "end": end_ts.isoformat(),
-                    "saving_gbp": float(round(saving, 4)),
+                    "saving": float(round(saving, 4)),
+                    "currency": "GBP",  # configurable
                     "explanation": f"Shift {name} to {start_ts.strftime('%H:%M')}–{end_ts.strftime('%H:%M')} to save £{saving:.2f}",
                 }
             )
