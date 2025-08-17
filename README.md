@@ -16,6 +16,8 @@ Most energy tools are locked to vendor dashboards. **ai-energy-saver** is:
 - 🌍 Optional CO₂ estimates via intensity tables
 - 🧩 Provider system to swap forecasting/anomaly engines
 - 🛠 CLI & Python API
+- 🌍 Global-ready: works with any time-of-use tariff and currency. You can pass a `currency` code (e.g., USD/EUR/INR) and provide your own tariff JSON; the optimisation logic is geography-agnostic.
+
 
 ## Install
 ```bash

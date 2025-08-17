@@ -22,10 +22,11 @@ def test_tariff_window_optimizer_basic():
         forecast_kwh=forecast,
         tariff=tariff,
         cycles=[{"name": "washer", "kwh": 1.2, "duration_h": 1}],
+        currency="GBP",
     )
 
     assert isinstance(recs, list)
     assert recs, "expected at least one recommendation"
     r0 = recs[0]
-    for key in ["name", "start", "end", "saving_gbp", "explanation"]:
+    for key in ["name", "start", "end", "saving", "currency", "explanation"]:
         assert key in r0
