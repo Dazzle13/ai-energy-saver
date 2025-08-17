@@ -38,7 +38,7 @@ class Analyzer:
         # Optimise (simple default cycle)
         optimizer = TariffWindowOptimizer()
         cycles = [{"name": "washer", "kwh": 1.2, "duration_h": 2, "latest_start": "23:00"}]
-        recommendations = optimizer.schedule(forecast, tariff, cycles)
+        recommendations = optimizer.schedule(forecast, tariff, cycles, currency="GBP") 
 
         # Anomalies
         detector = IsolationForestDetector()
@@ -49,7 +49,7 @@ class Analyzer:
         top_actions = [
             {
                 "action": r["explanation"],
-                "saving_gbp": round(r["saving_gbp"], 2),
+                "saving": round(r["saving"], 2),
             }
             for r in recommendations
         ]

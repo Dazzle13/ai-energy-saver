@@ -38,7 +38,7 @@ class TariffWindowOptimizer(BaseOptimizer):
     using forecast_kwh timestamps; compute cost using tariff; choose lowest-cost start.
     """
 
-    def schedule(self, forecast_kwh: pd.Series, tariff: pd.DataFrame, cycles: List[Dict]) -> List[Dict]:
+    def schedule(self, forecast_kwh: pd.Series, tariff: pd.DataFrame, cycles: List[Dict], currency: str = "GBP") -> List[Dict]:
         recs: List[Dict] = []
 
         slot_minutes = int((forecast_kwh.index[1] - forecast_kwh.index[0]).total_seconds() / 60)
@@ -85,7 +85,8 @@ class TariffWindowOptimizer(BaseOptimizer):
                     "name": name,
                     "start": start_ts.isoformat(),
                     "end": end_ts.isoformat(),
-                    "saving_gbp": float(round(saving, 4)),
+                    "saving": float(round(saving, 4)),
+                    "currency": currency,  # configurable
                     "explanation": f"Shift {name} to {start_ts.strftime('%H:%M')}–{end_ts.strftime('%H:%M')} to save £{saving:.2f}",
                 }
             )
